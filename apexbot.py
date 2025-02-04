@@ -10,7 +10,7 @@ def respond(user_input, chat_history):
 
     try:
         response = requests.post("http://localhost:11434/api/generate", json={
-            "model": "deepseek-r1:14b",
+            "model": "f1-bot",
             "prompt": prompt
         }, stream=True)  # Activation du mode streaming
 
