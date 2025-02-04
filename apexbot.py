@@ -1,13 +1,12 @@
+import gradio as gr
 import requests
 import json
-import gradio as gr
+import time
+import re  # Ajout d'une librairie pour nettoyer le texte
 
 # Fonction pour interagir avec Ollama et récupérer la réponse complète
-def chatbot_response(user_input, history):
+def respond(user_input, chat_history):
     prompt = f"{user_input}\nBot:"
-
-    # Ajout du prompt du user à l'historique
-    history.append(gr.ChatMessage(role="user", content=user_input))
 
     try:
         response = requests.post("http://localhost:11434/api/generate", json={
@@ -34,27 +33,29 @@ def chatbot_response(user_input, history):
     # Debugging pour voir ce que reçoit l'UI
     print("Réponse complète du chatbot :", bot_response)
 
-    # Ajout de l'historique au format ChatMessage
-    history.append(gr.ChatMessage(role="assistant", content=bot_response))
-    print(history)
-    
-    return history  # Retourne l'historique mis à jour
+    # 🔹 **Nettoyage du texte : Supprime les balises <think> et tout leur contenu**
+    bot_response = re.sub(r"<think>.*?</think>", "", bot_response, flags=re.DOTALL).strip()
 
-# Interface Gradio avec le format natif ChatMessage
+    # 🔹 Vérification après nettoyage
+    print("Réponse nettoyée :", bot_response)
+
+    # Ajout de l'historique au format dict (Gradio messages)
+    chat_history.append({"role": "user", "content": user_input})
+    chat_history.append({"role": "assistant", "content": bot_response})
+
+    time.sleep(1)  # Simule un petit délai pour l'affichage
+
+    return "", chat_history  # Retourne l'input vide + l'historique mis à jour
+
+# Interface Gradio
 with gr.Blocks() as demo:
-    gr.Markdown("# 🏎️ ApexBot")
+    gr.Markdown("# 🤖 Chatbot F1 avec DeepSeek-R1")
 
-    # Initialisation de l'historique avec un message d'accueil
-    history = [gr.ChatMessage(role="assistant", content="Salut ! Pose-moi tes questions.")]
+    chatbot = gr.Chatbot(type="messages")  # Format messages correct
+    msg = gr.Textbox(label="Pose ta question sur la F1", placeholder="Ex: Qui a gagné le dernier GP ?")
+    clear = gr.ClearButton([msg, chatbot])  # Bouton pour réinitialiser la conversation
 
-    chatbot = gr.Chatbot(history, type="messages")  # Utilisation du bon format
-    user_input = gr.Textbox(label="Pose ta question", placeholder="Ex: Qui a gagné le dernier GP de F1?")
+    msg.submit(respond, [msg, chatbot], [msg, chatbot])  # Envoi du message quand l'utilisateur appuie sur Entrée
 
-    with gr.Row():
-        send_button = gr.Button("Envoyer")
-        clear_button = gr.Button("🗑 Réinitialiser")
-
-    send_button.click(chatbot_response, inputs=[user_input, chatbot], outputs=chatbot)
-    clear_button.click(lambda: [gr.ChatMessage(role="assistant", content="Nouvelle conversation.")], outputs=chatbot)
-
-demo.launch()
+if __name__ == "__main__":
+    demo.launch()
