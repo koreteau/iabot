@@ -35,7 +35,7 @@ APEXBOT est un chatbot interactif permettant d'obtenir des informations sur la F
 
 ### `Data_scrapping.ipynb` - Extraction des données 🌍
 - Notebook Jupyter permettant de récupérer des données de F1.
-- Probablement basé sur **Pandas** et **BeautifulSoup/Selenium**.
+- basé sur **Pandas** et **requests**.
 
 ### `Modelfile.md` - Configuration du modèle 🛠️
 - Modèle utilisé : **deepseek-r1:14b**.
