@@ -1,5 +1,6 @@
 import gradio as gr
 import requests
+import json
 
 # Fonction pour récupérer les dernières infos F1
 def get_f1_news():
@@ -17,26 +18,34 @@ def get_f1_news():
 
 # Fonction du chatbot avec gestion de l'historique
 def chatbot_response(user_input, chat_history):
-    # Formatage du contexte avec l'historique de discussion
-    context = "\n".join([f"User: {msg[0]}\nBot: {msg[1]}" for msg in chat_history])
-    
-    # Construction du prompt avec l'historique
-    prompt = f"{context}\nUser: {user_input}\nBot:"
+    prompt = f"{user_input}\nBot:"
 
-    # Envoi de la requête à Ollama
-    response = requests.post("http://localhost:11434/api/generate", json={
-        "model": "deepseek/deepseek-coder-r1",
-        "prompt": prompt
-    })
-    
-    if response.status_code == 200:
-        bot_response = response.json().get("response", "Je n'ai pas compris la question.")
-    else:
-        bot_response = "Erreur de connexion avec Ollama."
+    try:
+        response = requests.post("http://localhost:11434/api/generate", json={
+            "model": "deepseek-r1:14b",
+            "prompt": prompt
+        }, stream=True)  # Activation du mode streaming
 
-    # Ajout de la réponse dans l'historique
+        bot_response = ""  # Initialisation de la réponse
+
+        for line in response.iter_lines():
+            if line:
+                try:
+                    data = json.loads(line.decode("utf-8"))  # Lire chaque ligne JSON
+                    bot_response += data.get("response", "")  # Ajouter la réponse reçue
+                except json.JSONDecodeError:
+                    continue  # Ignore les erreurs JSON
+
+        # Vérification de la réponse
+        if not bot_response.strip():
+            bot_response = "⚠️ Je n'ai pas compris votre question ou aucune réponse n'a été générée."
+
+    except requests.exceptions.ConnectionError:
+        bot_response = "⚠️ Erreur de connexion avec Ollama. Vérifie qu'il tourne avec `ollama serve`."
+
+    # Ajout à l'historique et retour des messages
     chat_history.append((user_input, bot_response))
-
+    print("Réponse complète du chatbot :", bot_response)
     return chat_history, chat_history
 
 # Interface avec Gradio
@@ -44,7 +53,7 @@ with gr.Blocks() as demo:
     gr.Markdown("# 🏎️ ApexBot - Discussion en direct")
 
     chatbot = gr.Chatbot(label="Chat avec le bot F1")
-    user_input = gr.Textbox(label="Pose ta question sur la F1", placeholder="Ex: Qui a gagné le dernier GP ?")
+    user_input = gr.Textbox(label="Pose ta question sur la F1", placeholder="Ex: Qui a gagné le dernier GP F1 ?")
 
     with gr.Row():
         send_button = gr.Button("Envoyer")
