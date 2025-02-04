@@ -49,10 +49,10 @@ def respond(user_input, chat_history):
 
 # Interface Gradio
 with gr.Blocks() as demo:
-    gr.Markdown("# 🤖 Chatbot F1 avec DeepSeek-R1")
+    gr.Markdown("# 🏎️ APEXBOT")
 
     chatbot = gr.Chatbot(type="messages")  # Format messages correct
-    msg = gr.Textbox(label="Pose ta question sur la F1", placeholder="Ex: Qui a gagné le dernier GP ?")
+    msg = gr.Textbox(label="Pose ta question", placeholder="Ex: Qui a gagné le dernier GP de F1 ?")
     clear = gr.ClearButton([msg, chatbot])  # Bouton pour réinitialiser la conversation
 
     msg.submit(respond, [msg, chatbot], [msg, chatbot])  # Envoi du message quand l'utilisateur appuie sur Entrée
