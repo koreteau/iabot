@@ -36,18 +36,19 @@ def chatbot_response(user_input, history):
 
     # Ajout de l'historique au format ChatMessage
     history.append(gr.ChatMessage(role="assistant", content=bot_response))
+    print(history)
     
     return history  # Retourne l'historique mis à jour
 
 # Interface Gradio avec le format natif ChatMessage
 with gr.Blocks() as demo:
-    gr.Markdown("# 🤖 Chatbot F1 avec DeepSeek-R1")
+    gr.Markdown("# 🏎️ ApexBot")
 
     # Initialisation de l'historique avec un message d'accueil
     history = [gr.ChatMessage(role="assistant", content="Salut ! Pose-moi tes questions.")]
 
     chatbot = gr.Chatbot(history, type="messages")  # Utilisation du bon format
-    user_input = gr.Textbox(label="Pose ta question sur la F1", placeholder="Ex: Qui a gagné le dernier GP ?")
+    user_input = gr.Textbox(label="Pose ta question", placeholder="Ex: Qui a gagné le dernier GP de F1?")
 
     with gr.Row():
         send_button = gr.Button("Envoyer")
