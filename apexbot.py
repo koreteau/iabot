@@ -1,9 +1,14 @@
 import gradio as gr
 import requests
 import json
+<<<<<<< Updated upstream
 import re
 import os
 import glob
+=======
+import time
+import re  # Pour nettoyer le texte
+>>>>>>> Stashed changes
 
 
 F1_FOLDERS = {
@@ -98,6 +103,7 @@ def query_ollama(user_input, f1_context):
     except requests.exceptions.ConnectionError:
         return "⚠️ Erreur de connexion avec Ollama. Vérifie qu'il tourne avec `ollama serve`."
 
+<<<<<<< Updated upstream
 def respond(user_input, chat_history):
     """ Génère une réponse combinée entre DeepSeek et nos fichiers F1 """
 
@@ -114,22 +120,69 @@ def respond(user_input, chat_history):
     response = re.sub(r"<think>.*?</think>", "", response, flags=re.DOTALL).strip()
 
     # Mise à jour de l'historique
+=======
+    # Affichage pour le débogage
+    print("Réponse complète du chatbot :", bot_response)
+
+    # Nettoyage du texte : suppression des balises <think> et de leur contenu
+    bot_response = re.sub(r"<think>.*?</think>", "", bot_response, flags=re.DOTALL).strip()
+
+    print("Réponse nettoyée :", bot_response)
+
+    # Mise à jour de l'historique (format Gradio messages)
+>>>>>>> Stashed changes
     chat_history.append({"role": "user", "content": user_input})
     chat_history.append({"role": "assistant", "content": response})
 
+<<<<<<< Updated upstream
     print("Réponse générée :", response)
 
     return "", chat_history
 
+=======
+    time.sleep(1)  # Délai simulé pour l'affichage
+
+    return "", chat_history  # Retourne l'input vide et l'historique mis à jour
+
+# Fonction pour enregistrer le feedback
+def enregistrer_feedback(feedback, chat_history):
+    # Ici, vous pouvez envoyer le feedback vers une API, l'enregistrer dans une base de données ou un fichier
+    print("Feedback reçu :", feedback)
+    
+    # Exemple d'enregistrement dans un fichier (mode append)
+    with open("feedback.txt", "a", encoding="utf-8") as f:
+        f.write("Feedback: " + feedback + "\n")
+        f.write("Historique: " + json.dumps(chat_history, ensure_ascii=False) + "\n")
+        f.write("="*50 + "\n")
+    
+    # Réinitialiser la zone de texte de feedback
+    return gr.update(value="")
+>>>>>>> Stashed changes
 
 with gr.Blocks() as demo:
     gr.Markdown("# 🏎️ APEXBOT")
 
+<<<<<<< Updated upstream
     chatbot = gr.Chatbot(type="messages")
     msg = gr.Textbox(label="Pose ta question", placeholder="Ex: Qui a gagné le Grand Prix de Monza en 2020 ?")
     clear = gr.ClearButton([msg, chatbot])
 
     msg.submit(respond, [msg, chatbot], [msg, chatbot])
+=======
+    # Zone du chatbot et du message utilisateur
+    chatbot = gr.Chatbot(type="messages")
+    msg = gr.Textbox(label="Pose ta question", placeholder="Ex: Qui a gagné le dernier GP de F1 ?")
+    clear = gr.ClearButton([msg, chatbot])
+
+    # Soumission du message utilisateur
+    msg.submit(respond, [msg, chatbot], [msg, chatbot])
+
+    # Zone de feedback
+    gr.Markdown("### Donnez votre feedback sur la réponse")
+    feedback_input = gr.Textbox(label="Votre feedback", placeholder="Ex: La réponse était claire / peu pertinente, etc.")
+    feedback_button = gr.Button("Envoyer le feedback")
+    feedback_button.click(enregistrer_feedback, [feedback_input, chatbot], feedback_input)
+>>>>>>> Stashed changes
 
 if __name__ == "__main__":
     demo.launch()

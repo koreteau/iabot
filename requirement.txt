@@ -1,0 +1,8 @@
+gradio
+requests
+json
+re
+pandas
+beautifulsoup4
+selenium
+time
