@@ -12,7 +12,7 @@ F1_FOLDERS = {
     "circuits": "data/circuits",
     "classements": "data/classement"
 }
- 
+
 F1_KEYWORDS = ["F1", "Formula 1", "Grand Prix", "pilote", "écurie", "championnat", "circuit", "calendrier", "classement", "course", "GP"]
  
 def load_f1_data():
