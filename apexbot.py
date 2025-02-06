@@ -113,15 +113,6 @@ def respond(user_input, chat_history):
     # Nettoyage du texte pour enlever les raisonnements de l'ia
     response = re.sub(r"<think>.*?</think>", "", response, flags=re.DOTALL).strip()
  
-    # Mise à jour de l'historique
-    # Affichage pour le débogage
-    print("Réponse complète du chatbot :", bot_response)
- 
-    # Nettoyage du texte : suppression des balises <think> et de leur contenu
-    bot_response = re.sub(r"<think>.*?</think>", "", bot_response, flags=re.DOTALL).strip()
- 
-    print("Réponse nettoyée :", bot_response)
- 
     # Mise à jour de l'historique (format Gradio messages)
     chat_history.append({"role": "user", "content": user_input})
     chat_history.append({"role": "assistant", "content": response})
