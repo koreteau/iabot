@@ -12,6 +12,13 @@ APEXBOT est un chatbot interactif permettant d'obtenir des informations sur la F
 │   ├── 📂 circuits
 │   ├── 📂 classement
 │   ├── 📂 constructeurs
+📂 webappjs
+│   ├── 📂 public
+│   ├── 📂 src
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   ├── tailwind.config.js
 ├── apexbot.py
 ├── Data_scrapping.ipynb
 ├── feedback.txt
